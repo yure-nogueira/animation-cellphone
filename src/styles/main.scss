@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #aaa;
+}
+
+.card {
+  flex: 0 0 auto;
+  position: relative;
+  width: 337px;
+  height: 596px;
+  border: 6px solid #303030;
+  border-radius: 24px;
+  background: #000;
+  overflow: hidden;
+  box-shadow: 3px 3px 12px 0 #303030;
+  transform-style: preserve-3d;
+
+  &__content {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+  }
+
+  &:nth-of-type(1) {
+    transform: perspective(1200px) translateX(50%);
+    scale: 0.5;
+    z-index: 5;
+    background-image: url('/medsoft-1.png');
+  }
+
+  &:nth-of-type(2) {
+    transform: perspective(1200px);
+    scale: 0.75;
+    z-index: 10;
+    background-image: url('/medsoft-2.png');
+  }
+
+  &:nth-of-type(3) {
+    transform: perspective(1200px) translateX(-50%);
+    scale: 0.5;
+    z-index: 5;
+    background-image: url('/medsoft-3.png');
+  }
+}
