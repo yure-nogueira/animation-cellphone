@@ -44,7 +44,7 @@ window.addEventListener('DOMContentLoaded', () => {
       locked = true;
       setTimeout(() => {
         locked = false;
-      }, 600);
+      }, 800);
 
       TL.clear();
       TL.move(card, { duration: 1.5 });
