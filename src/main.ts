@@ -17,8 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
   gsap.registerEffect({
     name: 'move',
     effect: (targets: any, config: any) => {
-      const xRotation = randomValue();
-      const yRotation = randomValue();
+      const xRotation = config.xRotation || randomValue();
+      const yRotation = config.yRotation || randomValue();
       const xShadow = (4 * xRotation) / max;
       const yShadow = (4 * xRotation) / max;
 
@@ -44,10 +44,19 @@ window.addEventListener('DOMContentLoaded', () => {
       locked = true;
       setTimeout(() => {
         locked = false;
-      }, 1000);
+      }, 600);
 
       TL.clear();
       TL.move(card, { duration: 1.5 });
+    });
+
+    card?.addEventListener('mouseleave', () => {
+      TL.clear();
+      TL.move(card, {
+        xRotation: 0,
+        yRotation: 0,
+        duration: 1.5
+      });
     });
   });
 });
