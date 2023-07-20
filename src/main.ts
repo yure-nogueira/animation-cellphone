@@ -91,6 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
         rotateY: 0,
         duration: 1.5
       }).eventCallback('onComplete', () => {
+        TL.eventCallback('onComplete', () => {});
         defaultMotion.restart();
       });
     });
