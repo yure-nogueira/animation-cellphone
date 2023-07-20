@@ -2,10 +2,8 @@ import { gsap } from 'gsap';
 
 window.addEventListener('DOMContentLoaded', () => {
   const cards = document.querySelectorAll('.card');
-  const TL = gsap.timeline();
-  const min = -15;
-  const max = 15;
-  const randomValue = () => Math.floor(Math.random() * (max - min + 1)) + min;
+  const offsetX = 15;
+  const offsetY = 15;
 
   gsap.from(cards, {
     scale: 0.3,
@@ -15,12 +13,42 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   gsap.registerEffect({
+    name: 'defaultMotion',
+    effect: (targets: any, config: any) => {
+      const animation = gsap
+        .timeline({
+          defaults: {
+            ease: 'none',
+            duration: 3
+          }
+        })
+        .to(targets, {
+          rotateX: offsetX / 2,
+          rotateY: offsetY / 2
+        })
+        .to(targets, {
+          rotateY: -offsetY / 2
+        })
+        .to(targets, {
+          rotateX: -offsetX / 2
+        })
+        .to(targets, {
+          rotateY: 0,
+          rotateX: 0
+        });
+
+      return animation;
+    },
+    extendTimeline: true
+  });
+
+  gsap.registerEffect({
     name: 'move',
     effect: (targets: any, config: any) => {
-      const xRotation = config.xRotation || randomValue();
-      const yRotation = config.yRotation || randomValue();
-      const xShadow = (4 * xRotation) / max;
-      const yShadow = (4 * xRotation) / max;
+      const xRotation = config.rotateX ?? 0;
+      const yRotation = config.rotateY ?? 0;
+      const xShadow = (4 * xRotation) / offsetX;
+      const yShadow = (4 * xRotation) / offsetX;
 
       return gsap.to(targets, {
         duration: config.duration,
@@ -34,29 +62,44 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   cards.forEach((card) => {
-    let locked = false;
+    const TL = gsap.timeline();
+    const TLDefault = gsap.timeline();
+    let defaultMotion = TLDefault.defaultMotion(card, {}) as gsap.core.Timeline;
+    defaultMotion.eventCallback('onComplete', () => {
+      defaultMotion = TLDefault.defaultMotion(card, {}) as gsap.core.Timeline;
+    });
 
-    card?.addEventListener('mousemove', () => {
-      const rect = card.getBoundingClientRect();
-      console.log(rect);
+    card?.addEventListener('mouseenter', () => {
+      defaultMotion.pause();
+    });
 
-      if (locked) return;
-      locked = true;
-      setTimeout(() => {
-        locked = false;
-      }, 800);
+    card?.addEventListener('mousemove', (e: any) => {
+      const { x, y, width, height } = card.getBoundingClientRect();
+      const mouseX = e.clientX - x;
+      const mouseY = e.clientY - y;
+      const rotateY = getRotation(width, mouseX, offsetX);
+      const rotateX = -getRotation(height, mouseY, offsetY);
 
-      TL.clear();
-      TL.move(card, { duration: 1.5 });
+      TL.clear(true);
+      TL.move(card, { rotateX, rotateY, duration: 1.5 });
     });
 
     card?.addEventListener('mouseleave', () => {
-      TL.clear();
-      TL.move(card, {
-        xRotation: 0,
-        yRotation: 0,
+      TL.clear(true);
+      TL.to(card, {
+        rotateX: 0,
+        rotateY: 0,
         duration: 1.5
+      }).eventCallback('onComplete', () => {
+        defaultMotion.restart();
       });
     });
   });
 });
+
+function getRotation(size: number, mousePos: number, offset: number) {
+  const K = -offset;
+  const a = (2 * offset) / size;
+
+  return a * mousePos + K;
+}
