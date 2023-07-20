@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   gsap.registerEffect({
     name: 'defaultMotion',
-    effect: (targets: any, config: any) => {
+    effect: (targets: any) => {
       const animation = gsap
         .timeline({
           defaults: {
